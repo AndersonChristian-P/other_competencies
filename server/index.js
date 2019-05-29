@@ -3,7 +3,7 @@ const express = require("express")
 const app = express()
 const { SESSION_SECRET, SERVER_PORT } = process.env
 const session = require("express-session")
-const userCtrl = require("./controllers/usersCtrl")
+const userCtrl = require("./usersCtrl")
 
 // -- MIDDLEWARE -- //
 
@@ -14,7 +14,7 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    maxAge: 1000 * 60 * 60 * 24
+    maxAge: 1000 * 60 * 60 * 1
   }
 }))
 
@@ -34,13 +34,11 @@ app.listen(SERVER_PORT, () => {
 
 // -- MIDDLEWARE FUNCTION -- //
 var myLogger = function (req, res, next) {
-  console.log("LOGGED")
+  console.log("LOGGED NEW USER")
   next()
 }
 
 
 // -- ENDPOINTS -- //
-
-app.get("/api/users", myLogger, userCtrl.getUsers)
-app.post("/api/adduser", userCtrl.addUser)
-app.get("/api/getuser", userCtrl.getUser)
+app.post("/api/user", myLogger, userCtrl.addUser)
+app.get("/api/user", userCtrl.getUser)

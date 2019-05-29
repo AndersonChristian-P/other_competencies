@@ -1,0 +1,13 @@
+.user-exists {
+  color: green;
+  text-transform: capitalize;
+}
+
+.user-no-exists {
+  color: red;
+  text-transform: capitalize;
+}
+
+input {
+  margin: 0 10px;
+}

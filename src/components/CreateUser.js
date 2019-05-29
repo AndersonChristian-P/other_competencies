@@ -1,12 +1,14 @@
 import React, { Component } from "react"
 import axios from "axios";
+import "./CreateUser.css"
 
 class CreateUser extends Component {
   state = {
     firstname: "",
     lastname: "",
     lookupUser: "",
-    userExists: false
+    userExists: false,
+    foundUser: ""
   }
 
   handleChange = (event) => {
@@ -18,20 +20,32 @@ class CreateUser extends Component {
 
   handleAddUser = () => {
     const { firstname, lastname } = this.state
-    axios.post("/api/adduser", { firstname, lastname })
+    axios.post("/api/user", { firstname, lastname })
     this.setState({
-      user: ""
+      firstname: "",
+      lastname: ""
     })
   }
 
   checkUser = () => {
     const { lookupUser } = this.state
-    const result = axios.get(`/api/getuser?firstname=${lookupUser}`)
-    if (result) {
-      this.setState({
-        userExists: true
+    axios.get(`/api/user?firstname=${lookupUser}`)
+      .then(res => {
+        // console.log("STATUS", res.status)
+        if (res.status === 200) {
+          this.setState({
+            userExists: true,
+            lookupUser: "",
+            foundUser: res.data[0].firstname
+          })
+        } else {
+          this.setState({
+            userExists: false,
+            lookupUser: "",
+            foundUser: ""
+          })
+        }
       })
-    }
   }
 
   render() {
@@ -39,26 +53,45 @@ class CreateUser extends Component {
 
     return (
       <div>
-        <h2>Hello!</h2>
+        <h2>Add User to Session</h2>
 
         <div>
-          <input type="text" onChange={this.handleChange} value={this.state.firstname} name="firstname" />
-          <input type="text" onChange={this.handleChange} value={this.state.lastname} name="lastname" />
+          <input
+            type="text"
+            onChange={this.handleChange}
+            value={this.state.firstname}
+            name="firstname"
+            placeholder="first name"
+          />
+          <input
+            type="text"
+            onChange={this.handleChange}
+            value={this.state.lastname}
+            name="lastname"
+            placeholder="last name"
+          />
           <button onClick={this.handleAddUser}>Add User to session</button>
         </div>
 
         <div>
           <h4>Does User Exist on Session?</h4>
-          <input type="text" placeholder="first name" onChange={this.handleChange} value={this.state.userInQues} name="lookupUser" />
+          <input
+            type="text"
+            placeholder="first name"
+            onChange={this.handleChange}
+            value={this.state.lookupUser}
+            name="lookupUser"
+          />
           <button onClick={this.checkUser}>Click to see</button>
-        </div>
 
-        {/* <div>
-          {this.state.userExists ?
-            <h1 style={{ color: "green" }}>Yes, user exits</h1> :
-            <h1 style={{ color: "red" }}>No, user does not exist</h1>
-          }
-        </div> */}
+          <div>
+            {this.state.userExists ?
+              <h1 className="user-exists">yes, {this.state.foundUser} exists</h1> :
+              <h1 className="user-no-exists">no, user does not exist</h1>
+            }
+          </div>
+
+        </div>
 
       </div>
 
